@@ -1,0 +1,17 @@
+.card-img-top {
+  width: 400px;
+  height: 400px;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+
+
+.card {
+  justify-content: space-around;
+  margin: auto;
+}

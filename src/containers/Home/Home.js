@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import './home.scss'
 
 class Home extends Component {
   state = {
     apiKey: '563492ad6f91700001000001800c3755a9b34997a76d0bea496f710f',
-    apiPhotoBaseUrl: 'https://picsum.photos',
-    imageUrl: '',
-    photos: '',
-    test: process.env.TEST
+    apiPhotoBaseUrl: 'https://api.pexels.com/v1',
+    photos: [],
   }
 
   getNewPhoto = async (e) => {
     e.preventDefault()
     try {
-      const data = await axios.get(`${this.state.apiPhotoBaseUrl}/500/300?random=1`)
-      console.log('data: ', data)
-      // this.setState({ imageUrl: `${this.state.apiPhotoBaseUrl}/800x600` })
+      const { data: { photos } } = await axios.get(`${this.state.apiPhotoBaseUrl}/search?query=nature&per_page=50`, {
+        headers: {
+          Authorization: this.state.apiKey
+        }
+      })
+      this.setState({ photos })
     } catch (error) {
       console.log(error)
     }
@@ -23,7 +25,7 @@ class Home extends Component {
 
   render() {
     const { getNewPhoto } = this;
-    const { imageUrl } = this.state;
+    const { photos } = this.state;
     return (
       <div>
 
@@ -36,26 +38,32 @@ class Home extends Component {
           </p> */}
         </div>
 
-        <div className="container">
-          <div className="row center">
-            <div className="col">
-              <div className="card mb-4 box-shadow">
-                <img className="card-img-top" src={imageUrl} />
-                <div className="card-body">
-                  <p className="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div className="btn-group">
-                      <button type="button" className="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" className="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small className="text-muted">9 mins</small>
-                  </div>
+        <section className="cards">
+          {photos.length > 0 && photos.map((photo, index) => <div className="card mb-4 box-shadow" key={index}><img className="card-img-top" src={photo.src.medium} />
+            <div className="card-body">
+              <p className="card-text">{photo.photographer}</p>
+              <p className="card-text">{photo.photographer_url}</p>
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="btn-group">
+                  <button type="button" className="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" className="btn btn-sm btn-outline-secondary">Edit</button>
                 </div>
+                <small className="text-muted">9 mins</small>
               </div>
             </div>
-          </div>
+          </div>)}
+        </section>
+        <div className="card-body">
+          {/* <p className="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p> */}
+          {/* <div className="d-flex justify-content-between align-items-center">
+                <div className="btn-group">
+                  <button type="button" className="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" className="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small className="text-muted">9 mins</small>
+              </div> */}
         </div>
-        <button onClick={getNewPhoto}>Nueva imagen random</button>
+        <button onClick={getNewPhoto}>Muestrame nuevas imagenes!</button>
       </div>
     );
   }
