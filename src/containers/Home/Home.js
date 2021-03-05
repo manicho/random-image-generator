@@ -7,30 +7,38 @@ class Home extends Component {
     apiKey: process.env.API_KEY,
     apiPhotoBaseUrl: 'https://api.pexels.com/v1',
     photos: [],
+    category: '',
+    loading: false,
+  };
+
+  updateValues = (event) => {
+    this.setState({ [event.target.name]: event.target.value });
   };
 
   getNewPhoto = async (e) => {
+    this.setState({ loading: true });
+    const { category } = this.state;
     e.preventDefault();
     try {
       const {
         data: { photos },
       } = await axios.get(
-        `${this.state.apiPhotoBaseUrl}/search?query=nature&per_page=50`,
+        `${this.state.apiPhotoBaseUrl}/search?query=${category}&per_page=25&locale=es-ES`,
         {
           headers: {
             Authorization: this.state.apiKey,
           },
         }
       );
-      this.setState({ photos });
+      this.setState({ photos, loading: false });
     } catch (error) {
       console.log(error);
     }
   };
 
   render() {
-    const { getNewPhoto } = this;
-    const { photos } = this.state;
+    const { getNewPhoto, updateValues } = this;
+    const { photos, category, loading } = this.state;
     return (
       <div>
         <div className='container mb-5'>
@@ -47,13 +55,46 @@ class Home extends Component {
             <a href="#" class="btn btn-secondary my-2">Secondary action</a>
           </p> */}
         </div>
-
-        <section className='cards'>
-          {photos.length > 0 &&
-            photos.map((photo, index) => (
-              <div className='card mb-4 box-shadow' key={index}>
-                <img className='card-img-top' src={photo.src.medium} />
-                <div className='card-body'>
+        <div className='d-flex justify-content-center'>
+          <form onSubmit={getNewPhoto}>
+            <label>Enter photo category:</label>
+            <input
+              className='filter-input'
+              name='category'
+              maxLength='50'
+              autoComplete='off'
+              placeholder='nature'
+              type='text'
+              value={category}
+              onChange={updateValues}
+            />
+            <button
+              className='btn btn-dark'
+              type='submit'
+              disabled={category.length < 3}
+            >
+              Muestrame nuevas imagenes!
+            </button>
+          </form>
+        </div>
+        {loading && (
+          <div className='d-flex justify-content-center'>
+            <div className='spinner-border' role='status'>
+              <span className='sr-only'>Loading...</span>
+            </div>
+          </div>
+        )}
+        <section className="section">
+          <div className='grid'>
+            <div className='item'>
+            {photos.length > 0 &&
+                !loading &&
+                photos.map((photo, index) => (
+                  <img
+                    src={photo.src.medium}
+                    key={index}
+                  />
+                  /* <div className='card-body'>
                   <p className='card-text'>{photo.photographer}</p>
                   <p className='card-text'>{photo.photographer_url}</p>
                   <div className='d-flex justify-content-center align-items-center'>
@@ -64,14 +105,19 @@ class Home extends Component {
                       Download
                     </button>
                   </div>
-                </div>
-              </div>
-            ))}
+                </div> */
+                ))}
+            </div>
+          
+          </div>
         </section>
-        <div className='d-flex justify-content-center'>
-          Enter topic: <input />
-          <button className="btn btn-dark" onClick={getNewPhoto}>Muestrame nuevas imagenes!</button>
-        </div>
+        <section className='container-fluid'>
+          <div className='row'>
+            <div className='col-lg-3 col-md-3 col-sm-6 col-xs-6'>
+              
+            </div>
+          </div>
+        </section>
       </div>
     );
   }
