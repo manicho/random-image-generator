@@ -19,12 +19,11 @@ ul {
   padding: 10px;
   height: 30vh;
   flex-grow: 1;
-  position: relative;
 }
 
 .photo-image {
   box-shadow: -2px 2px 10px 0px rgba(#444, 0.4);
-  border-radius: 10px;
+  border-radius: 6px;
   max-height: 100%;
   min-width: 100%;
   object-fit: cover;
@@ -39,6 +38,80 @@ ul {
   }
 }
 
-.photo-caption {
+.modal {
+  display: block;
+  position: fixed;
+  // z-index: 1;
+  padding-top: 50px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.9);
+  transition: 0.2s ease-in;
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  width: auto;
+  max-height: 750px;
+}
+
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+.modal-content, #caption {  
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)} 
+  to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+  from {transform:scale(0)} 
+  to {transform:scale(1)}
+}
+
+.arrow {
+  font-size: 60px;
+  color: white;
+  margin: auto;
+}
+
+.images-carrousel {
+  display: flex;
+  align-items: center;
+}
+
+.pointer-none {
+  pointer-events: none;
+}
+
+.close-x {
+  right: 15px;
+  top: 0;
   position: absolute;
+  font-size: 70px;
+  color: white;
+  cursor: pointer;
+
+  &:hover {
+    color: red;
+    border-color: red;
+  }
 }

@@ -7,8 +7,14 @@ class Home extends Component {
     apiKey: process.env.API_KEY,
     apiPhotoBaseUrl: 'https://api.pexels.com/v1',
     photos: [],
+    currentPage: null,
+    totalResults: null,
     category: '',
     loading: false,
+    isOpen: false,
+    modalCurrentImage: '',
+    modalCurrentPhotographerName: '',
+    modalCurrentPhotographerUrl: '',
   };
 
   updateValues = (event) => {
@@ -20,9 +26,7 @@ class Home extends Component {
     const { category } = this.state;
     e.preventDefault();
     try {
-      const {
-        data: { photos },
-      } = await axios.get(
+      const { data } = await axios.get(
         `${this.state.apiPhotoBaseUrl}/search?query=${category}&per_page=50&locale=es-ES`,
         {
           headers: {
@@ -30,26 +34,48 @@ class Home extends Component {
           },
         }
       );
-      this.setState({ photos, loading: false });
+      this.setState({
+        photos: data.photos,
+        currentPage: data.page,
+        totalResults: data.total_results,
+        loading: false,
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
+  closeModal = () => {
+    const { isOpen } = this.state;
+    this.setState({ isOpen: !isOpen });
+  };
+
+  setModalContent = (image, photographer) => {
+    this.setState({
+      modalCurrentImage: image,
+      modalCurrentPhotographerName: photographer.photographerName,
+      modalCurrentPhotographerUrl: photographer.photographerUrl,
+      isOpen: true,
+    });
+  };
+
   render() {
-    const { getNewPhoto, updateValues } = this;
-    const { photos, category, loading } = this.state;
+    const { getNewPhoto, updateValues, setModalContent } = this;
+    const {
+      photos,
+      category,
+      loading,
+      isOpen,
+      modalCurrentImage,
+      modalCurrentPhotographerName,
+      modalCurrentPhotographerUrl,
+    } = this.state;
     return (
       <div className='container-fluid'>
-        <div className='container mb-5'>
+        <div className='container mb-5 mt-5'>
           <h1 className='jumbotron-heading text-center'>
             Get 50 random images
           </h1>
-          <p className='lead text-muted text-center'>
-            Something short and leading about the collection below—its contents,
-            the creator, etc. Make it short and sweet, but not too short so
-            folks dont simply skip over it entirely.
-          </p>
         </div>
         <div className='d-flex justify-content-center'>
           <form onSubmit={getNewPhoto}>
@@ -86,16 +112,54 @@ class Home extends Component {
               !loading &&
               photos.map((photo, index) => (
                 <div className='photo-element' key={index}>
-                  <img className='photo-image' src={photo.src.large} />
-                  {/* <figcaption className='photo-caption'>photo by {photo.photographer}</figcaption> */}
+                  <img
+                    className='photo-image'
+                    src={photo.src.medium}
+                    onClick={() =>
+                      setModalContent(photo.src.large2x, {
+                        photographerName: photo.photographer,
+                        photographerUrl: photo.photographer_url,
+                      })
+                    }
+                  />
                 </div>
               ))}
           </div>
-        </section>
-        <section className='container-fluid'>
-          <div className='row'>
-            <div className='col-lg-3 col-md-3 col-sm-6 col-xs-6'></div>
-          </div>
+          {isOpen && (
+            <div className='modal'>
+              <span
+                className='close-x'
+                onClick={() =>
+                  this.setState({
+                    isOpen: false,
+                    modalCurrentImage: '',
+                    modalCurrentPhotographerName: '',
+                    modalCurrentPhotographerUrl: '',
+                  })
+                }
+              >
+                &times;
+              </span>
+              <div className='images-carrousel'>
+                <i className='fa fa-angle-left arrow left'></i>
+                <img
+                  className='modal-content pointer-none'
+                  src={modalCurrentImage}
+                />
+                <i className='fa fa-angle-right arrow right'></i>
+              </div>
+              <div id='caption'>
+                photo by {' '}
+                <a
+                  href={modalCurrentPhotographerUrl}
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  {modalCurrentPhotographerName}
+                </a>
+              </div>
+            </div>
+          )}
         </section>
       </div>
     );

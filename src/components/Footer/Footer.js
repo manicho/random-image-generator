@@ -4,10 +4,10 @@ import './Footer.scss';
 
 const Footer = () => {
   return (
-    <div>
+    <footer className='footer'>
       <hr />
-      <h5>FOOTER</h5>
-    </div>
+      <h5>by manicho</h5>
+    </footer>
   );
 };
 
