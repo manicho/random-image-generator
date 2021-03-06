@@ -9,6 +9,7 @@ class Home extends Component {
     photos: [],
     currentPage: null,
     totalResults: null,
+    currentImageNumber: null,
     category: '',
     loading: false,
     isOpen: false,
@@ -16,6 +17,13 @@ class Home extends Component {
     modalCurrentPhotographerName: '',
     modalCurrentPhotographerUrl: '',
   };
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyPress, false);
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyPress, false);
+  }
 
   updateValues = (event) => {
     this.setState({ [event.target.name]: event.target.value });
@@ -50,17 +58,52 @@ class Home extends Component {
     this.setState({ isOpen: !isOpen });
   };
 
-  setModalContent = (image, photographer) => {
+  setModalContent = (image, photographer, currentImageNumber) => {
     this.setState({
       modalCurrentImage: image,
       modalCurrentPhotographerName: photographer.photographerName,
       modalCurrentPhotographerUrl: photographer.photographerUrl,
+      currentImageNumber,
       isOpen: true,
     });
   };
 
+  handleKeyPress = (e) => {
+    const { isOpen } = this.state;
+    if (e.keyCode == 27 && isOpen)
+      this.setState({
+        isOpen: false,
+        modalCurrentImage: '',
+        modalCurrentPhotographerName: '',
+        modalCurrentPhotographerUrl: '',
+      });
+  };
+
+  goToImage = (e) => {
+    e.preventDefault();
+    const { currentImageNumber, photos } = this.state;
+    const { setModalContent } = this;
+    const direction = e.target.id
+    const currentImageObject = photos[currentImageNumber]
+    const image = currentImageObject.src.large2x
+    const photographer = {
+      photographerName: currentImageObject.photographer,
+      photographerUrl: currentImageObject.photographer_url
+    }
+
+    if (direction === 'left-arrow' && currentImageNumber > 0) setModalContent(image, photographer, currentImageNumber - 1);
+    if (direction === 'right-arrow' && currentImageNumber < 50) setModalContent(image, photographer, currentImageNumber + 1);
+    
+  };
+
   render() {
-    const { getNewPhoto, updateValues, setModalContent } = this;
+    const {
+      getNewPhoto,
+      updateValues,
+      setModalContent,
+      handleKeyPress,
+      goToImage,
+    } = this;
     const {
       photos,
       category,
@@ -116,17 +159,21 @@ class Home extends Component {
                     className='photo-image'
                     src={photo.src.medium}
                     onClick={() =>
-                      setModalContent(photo.src.large2x, {
-                        photographerName: photo.photographer,
-                        photographerUrl: photo.photographer_url,
-                      })
+                      setModalContent(
+                        photo.src.large2x,
+                        {
+                          photographerName: photo.photographer,
+                          photographerUrl: photo.photographer_url,
+                        },
+                        index
+                      )
                     }
                   />
                 </div>
               ))}
           </div>
           {isOpen && (
-            <div className='modal'>
+            <div className='modal' onKeyPress={handleKeyPress}>
               <span
                 className='close-x'
                 onClick={() =>
@@ -141,15 +188,23 @@ class Home extends Component {
                 &times;
               </span>
               <div className='images-carrousel'>
-                <i className='fa fa-angle-left arrow left'></i>
+                <i
+                  id='left-arrow'
+                  className='fa fa-angle-left arrow left'
+                  onClick={goToImage}
+                ></i>
                 <img
                   className='modal-content pointer-none'
                   src={modalCurrentImage}
                 />
-                <i className='fa fa-angle-right arrow right'></i>
+                <i
+                  id='right-arrow'
+                  className='fa fa-angle-right arrow right'
+                  onClick={goToImage}
+                ></i>
               </div>
               <div id='caption'>
-                photo by {' '}
+                photo by{' '}
                 <a
                   href={modalCurrentPhotographerUrl}
                   target='_blank'
