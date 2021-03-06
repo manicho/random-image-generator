@@ -23,7 +23,7 @@ class Home extends Component {
       const {
         data: { photos },
       } = await axios.get(
-        `${this.state.apiPhotoBaseUrl}/search?query=${category}&per_page=25&locale=es-ES`,
+        `${this.state.apiPhotoBaseUrl}/search?query=${category}&per_page=50&locale=es-ES`,
         {
           headers: {
             Authorization: this.state.apiKey,
@@ -40,7 +40,7 @@ class Home extends Component {
     const { getNewPhoto, updateValues } = this;
     const { photos, category, loading } = this.state;
     return (
-      <div>
+      <div className='container-fluid'>
         <div className='container mb-5'>
           <h1 className='jumbotron-heading text-center'>
             Get 50 random images
@@ -50,10 +50,6 @@ class Home extends Component {
             the creator, etc. Make it short and sweet, but not too short so
             folks dont simply skip over it entirely.
           </p>
-          {/* <p>
-            <a href="#" class="btn btn-primary my-2">Main call to action</a>
-            <a href="#" class="btn btn-secondary my-2">Secondary action</a>
-          </p> */}
         </div>
         <div className='d-flex justify-content-center'>
           <form onSubmit={getNewPhoto}>
@@ -84,38 +80,21 @@ class Home extends Component {
             </div>
           </div>
         )}
-        <section className="section">
-          <div className='grid'>
-            <div className='item'>
+        <section className='photo-grid mt-5'>
+          <div className='photo-list'>
             {photos.length > 0 &&
-                !loading &&
-                photos.map((photo, index) => (
-                  <img
-                    src={photo.src.medium}
-                    key={index}
-                  />
-                  /* <div className='card-body'>
-                  <p className='card-text'>{photo.photographer}</p>
-                  <p className='card-text'>{photo.photographer_url}</p>
-                  <div className='d-flex justify-content-center align-items-center'>
-                    <button
-                      type='button'
-                      className='btn btn-sm btn-outline-secondary w-100'
-                    >
-                      Download
-                    </button>
-                  </div>
-                </div> */
-                ))}
-            </div>
-          
+              !loading &&
+              photos.map((photo, index) => (
+                <div className='photo-element' key={index}>
+                  <img className='photo-image' src={photo.src.large} />
+                  {/* <figcaption className='photo-caption'>photo by {photo.photographer}</figcaption> */}
+                </div>
+              ))}
           </div>
         </section>
         <section className='container-fluid'>
           <div className='row'>
-            <div className='col-lg-3 col-md-3 col-sm-6 col-xs-6'>
-              
-            </div>
+            <div className='col-lg-3 col-md-3 col-sm-6 col-xs-6'></div>
           </div>
         </section>
       </div>
