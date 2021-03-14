@@ -115,3 +115,19 @@ ul {
     border-color: red;
   }
 }
+
+.filter-input {
+  margin: 15px;
+  outline: none;
+  padding: 10px;
+  width: 400px;
+  border-color: black;
+  border: solid 1px;
+  border-radius: 5px;
+  font-size: 26px;
+  font-family: 'SF';
+
+  &:focus {
+    border: solid green 1px;
+  }
+}

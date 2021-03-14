@@ -81,18 +81,23 @@ class Home extends Component {
 
   goToImage = (e) => {
     e.preventDefault();
+    console.log(e.target.id)
     const { currentImageNumber, photos } = this.state;
-    const { setModalContent } = this;
     const direction = e.target.id
     const currentImageObject = photos[currentImageNumber]
+    console.log('image object: ', currentImageObject)
+    
     const image = currentImageObject.src.large2x
+    console.log('image: ', image)
     const photographer = {
       photographerName: currentImageObject.photographer,
       photographerUrl: currentImageObject.photographer_url
     }
+    console.log('photographer: ', JSON.stringify(photographer))
+    // this.setModalContent(image, photographer, currentImageNumber + 1)
 
-    if (direction === 'left-arrow' && currentImageNumber > 0) setModalContent(image, photographer, currentImageNumber - 1);
-    if (direction === 'right-arrow' && currentImageNumber < 50) setModalContent(image, photographer, currentImageNumber + 1);
+    if (direction === 'left-arrow' && currentImageNumber > 0) this.setModalContent(image, photographer, currentImageNumber - 1);
+    if (direction === 'right-arrow' && currentImageNumber < 50) this.setModalContent(image, photographer, currentImageNumber + 1);
     
   };
 
